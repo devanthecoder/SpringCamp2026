@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e6dea5e49f309f4e9739f3bb7a33fc8, type: 3}
   m_Name: Pistol
   m_EditorClassIdentifier: Assembly-CSharp::GunScript
-  totalAmmo: 30
-  gunForce: 5
-  reloadTime: 0.5
-  shootDelay: 0.4
+  TotalAmmo: 20
+  ShootDelay: 0.1
+  ReloadTime: 1
+  GunForce: 7.5
   isAutomatic: 0
-  anim: {fileID: 0}
