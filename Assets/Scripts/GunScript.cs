@@ -8,4 +8,5 @@ public class GunScript : ScriptableObject
     public float ReloadTime;
     public float GunForce;
     public bool isAutomatic;
+    public float gunDamage;
 }

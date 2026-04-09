@@ -17,3 +17,4 @@ MonoBehaviour:
   ReloadTime: 2
   GunForce: 2.5
   isAutomatic: 1
+  gunDamage: 6.7

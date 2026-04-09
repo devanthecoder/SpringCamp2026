@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class GunController : MonoBehaviour
 {
@@ -41,6 +42,7 @@ public class GunController : MonoBehaviour
             }
             else
             {
+                canShoot = false;
                 Invoke("Reload", Gun.ReloadTime);
             }
         }
@@ -59,6 +61,11 @@ public class GunController : MonoBehaviour
                 Debug.Log("Successful Hit");
                 rb.AddForceAtPosition(Gun.GunForce * Camera.main.transform.forward, hit.point, ForceMode.Impulse);   
             }
+            HealthBar hb = hit.collider.GetComponent<HealthBar>();
+            if(hb != null)
+            {
+                hb.TakeDamage(Gun.gunDamage);
+            }
         }
     }
     void Wait()
@@ -68,6 +75,7 @@ public class GunController : MonoBehaviour
     void Reload()
     {
         currAmmo = Gun.TotalAmmo;
+        canShoot = true;
     }
     void SwitchGun(int index)
     {
