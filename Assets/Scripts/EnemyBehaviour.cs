@@ -51,6 +51,7 @@ public class EnemyBehaviour : MonoBehaviour
     }
     void Shoot()
     {
+        transform.LookAt(player);
         GameObject bullet = Instantiate(bulletPrefab, shootPos.position, shootPos.rotation);
         bullet.transform.LookAt(player);
         lockOn = false;
