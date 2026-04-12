@@ -18,3 +18,4 @@ MonoBehaviour:
   GunForce: 7.5
   isAutomatic: 0
   gunDamage: 16.7
+  gunShot: {fileID: 8300000, guid: 6dd7024f00606b44eb5884197a66a893, type: 3}

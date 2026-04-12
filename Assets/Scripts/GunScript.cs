@@ -9,4 +9,5 @@ public class GunScript : ScriptableObject
     public float GunForce;
     public bool isAutomatic;
     public float gunDamage;
+    public AudioClip gunShot;
 }

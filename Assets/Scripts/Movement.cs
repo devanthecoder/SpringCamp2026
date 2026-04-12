@@ -17,9 +17,24 @@ public class Movement : MonoBehaviour
     private int currJumpCount;
     public Transform Legs;
     public LayerMask GroundLayer;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public float scaleFactor = 0.4f;
+
+    public float crouchFactor = 0.5f;
+    bool isCrouching, isSliding;
+    float origScale;
+    public float slideForce = 50f;
+    public float slideTime = 2f;
+    float slideTimer;
+    Vector3 inputDir;
+    public bool freeze = false;
+    // Start is called once before the f
+    // irst execution of Update after the MonoBehaviour is created
     void Start()
     {
+        slideTimer = slideTime;
+        isCrouching = false;
+        isSliding = false;
+        origScale = transform.localScale.y;
         currSpeed = speed;
         currJumpCount = jumpCount;
         Cursor.lockState = CursorLockMode.Locked;
@@ -29,15 +44,44 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.LeftShift)) currSpeed = sprintMultipler * speed;
+        if (freeze)
+        {
+            rb.linearVelocity = Vector3.zero;
+            currSpeed = 0f;
+        }
+        // Debug.Log(slideTimer);
         float hor = Input.GetAxis("Horizontal");
         float ver = Input.GetAxis("Vertical");
+        inputDir = transform.forward * ver + transform.right * hor;
+        if (isSliding)
+        {
+            slideTimer -= Time.deltaTime;
+            rb.AddForce(inputDir.normalized * slideForce, ForceMode.Force);
+            currSpeed = 0f;
+        }
+        if(isCrouching) currSpeed = crouchFactor * speed;
+        else currSpeed = speed;
+        Debug.Log(currSpeed);
         // Debug.Log(hor);
         // Debug.Log(ver);
-        rb.linearVelocity = (transform.forward * ver + transform.right * hor).normalized * currSpeed + transform.up * rb.linearVelocity.y;
+        rb.linearVelocity = inputDir.normalized * currSpeed + transform.up * rb.linearVelocity.y;
         LookAround();
         GroundCheck();
         Jump();
+        if(inputDir.magnitude < 0.1f)
+        {
+            Crouch();
+        }
+        else
+        {
+            StartSlide();
+        }
+        if (Input.GetKeyUp(KeyCode.Z))
+        {
+            isCrouching = false;
+            isSliding = false;
+            transform.localScale = new Vector3(transform.localScale.x, origScale, transform.localScale.z);
+        }
     }
     void LookAround()
     {
@@ -64,5 +108,34 @@ public class Movement : MonoBehaviour
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(transform.up * jumpForceAmount, ForceMode.Impulse);
         }
+    }
+    void Crouch()
+    {
+        if (Input.GetKeyDown(KeyCode.Z) && isGrounded)
+        {
+            isCrouching = true;
+            transform.localScale = new Vector3(transform.localScale.x, scaleFactor*origScale, transform.localScale.z);
+            rb.AddForce(5f * Vector3.down, ForceMode.Impulse);
+        }
+    }
+    void StartSlide()
+    {
+        if (Input.GetKeyDown(KeyCode.Z) && slideTimer > 0f && isGrounded)
+        {
+            isSliding = true;
+            transform.localScale = new Vector3(transform.localScale.x, scaleFactor*origScale, transform.localScale.z);
+            rb.AddForce(5f * Vector3.down, ForceMode.Impulse);
+        }
+        if(slideTimer < 0f)
+        {
+            StopSlide();
+        }
+        
+    }
+    void StopSlide()
+    {
+        isSliding = false;
+        transform.localScale = new Vector3(transform.localScale.x, origScale, transform.localScale.z);
+        slideTimer = slideTime;
     }
 }

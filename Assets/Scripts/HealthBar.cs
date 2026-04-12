@@ -16,7 +16,7 @@ public class HealthBar : MonoBehaviour
     {
         currentHealth -= damage;
         slider.value = currentHealth / maxHealth;
-        Debug.Log("current health " + currentHealth);
+        // Debug.Log("current health " + currentHealth);
         if(currentHealth <= 0f)
         {
             Die();

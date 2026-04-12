@@ -10,10 +10,12 @@ public class GunController : MonoBehaviour
     private GunScript Gun;
     private bool canShoot;
     private int currAmmo;
+    AudioSource source;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        source = GetComponent<AudioSource>();
         canShoot = true;
         Gun = DummyGuns[currIndex].Gun;
         currAmmo = Gun.TotalAmmo;
@@ -34,10 +36,10 @@ public class GunController : MonoBehaviour
         {
             if (currAmmo > 0)
             {
-                Debug.Log(currAmmo);   
+                // Debug.Log(currAmmo);   
                 canShoot = false;
                 Shoot();  
-                Debug.Log("Shot");
+                // Debug.Log("Shot");
                 Invoke("Wait", Gun.ShootDelay); 
             }
             else
@@ -50,6 +52,7 @@ public class GunController : MonoBehaviour
     }
     void Shoot()
     {
+        source.PlayOneShot(Gun.gunShot);
         DummyGuns[currIndex].anim.SetTrigger("Recoil");
         currAmmo--;
         RaycastHit hit;
@@ -58,7 +61,7 @@ public class GunController : MonoBehaviour
             Rigidbody rb = hit.collider.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                Debug.Log("Successful Hit");
+                // Debug.Log("Successful Hit");
                 rb.AddForceAtPosition(Gun.GunForce * Camera.main.transform.forward, hit.point, ForceMode.Impulse);   
             }
             HealthBar hb = hit.collider.GetComponent<HealthBar>();
