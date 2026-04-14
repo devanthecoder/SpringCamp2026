@@ -20,15 +20,13 @@ public class Movement : MonoBehaviour
     public float scaleFactor = 0.4f;
 
     public float crouchFactor = 0.5f;
-    bool isCrouching, isSliding;
+    public bool isCrouching, isSliding, isWallrunning;
     float origScale;
     public float slideForce = 50f;
     public float slideTime = 2f;
     float slideTimer;
     Vector3 inputDir;
     public bool freeze = false;
-    // Start is called once before the f
-    // irst execution of Update after the MonoBehaviour is created
     void Start()
     {
         slideTimer = slideTime;
@@ -44,6 +42,15 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.X))
+        {
+            Time.timeScale = 0.5f;
+        } else if (Input.GetKeyUp(KeyCode.X))
+        {
+            Time.timeScale = 1f;
+        }
+        if(Input.GetKeyDown(KeyCode.R))
+            GameManager.instance.RestartGame();
         if (freeze)
         {
             rb.linearVelocity = Vector3.zero;
@@ -59,7 +66,8 @@ public class Movement : MonoBehaviour
             rb.AddForce(inputDir.normalized * slideForce, ForceMode.Force);
             currSpeed = 0f;
         }
-        if(isCrouching) currSpeed = crouchFactor * speed;
+        else if(isCrouching) currSpeed = crouchFactor * speed;
+        else if(isWallrunning) currSpeed = 0f;
         else currSpeed = speed;
         Debug.Log(currSpeed);
         // Debug.Log(hor);
@@ -102,16 +110,21 @@ public class Movement : MonoBehaviour
     void Jump()
     {
         // Debug.Log(currJumpCount);
-        if(Input.GetKeyDown(KeyCode.Space) && currJumpCount > 0)
+        if(Input.GetKeyDown(KeyCode.Space) && currJumpCount > 0 && !isWallrunning)
         {
             currJumpCount--;
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(transform.up * jumpForceAmount, ForceMode.Impulse);
         }
+        else if(Input.GetKeyDown(KeyCode.Space) && isWallrunning)
+        {
+            Wallrunning wr = GetComponent<Wallrunning>();
+            wr.WallJump();
+        }
     }
     void Crouch()
     {
-        if (Input.GetKeyDown(KeyCode.Z) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Z) && isGrounded && !isWallrunning)
         {
             isCrouching = true;
             transform.localScale = new Vector3(transform.localScale.x, scaleFactor*origScale, transform.localScale.z);
@@ -120,7 +133,7 @@ public class Movement : MonoBehaviour
     }
     void StartSlide()
     {
-        if (Input.GetKeyDown(KeyCode.Z) && slideTimer > 0f && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Z) && slideTimer > 0f && isGrounded && !isWallrunning)
         {
             isSliding = true;
             transform.localScale = new Vector3(transform.localScale.x, scaleFactor*origScale, transform.localScale.z);

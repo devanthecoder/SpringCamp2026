@@ -21,6 +21,7 @@ public class GrappleGun : MonoBehaviour
         joint = GetComponent<SpringJoint>();
         lr.enabled = false;
         isGrappling = false;
+        joint.spring = 0f;
     }
 
     // Update is called once per frame
@@ -64,8 +65,8 @@ public class GrappleGun : MonoBehaviour
     }
     void StopGrapple()
     {
-        joint.spring = 0;
-        pm.freeze = false;    // joint.spring = 0f;
+        joint.spring = 0f;
+        pm.freeze = false;
         lr.enabled = false;
         isGrappling = false;
     }
